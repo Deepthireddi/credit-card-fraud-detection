@@ -1,0 +1,43 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import classification_report, confusion_matrix
+
+# Load the dataset
+data = pd.read_csv('creditcard.csv')
+
+# Separate features and target
+X = data.drop(columns=['Class'])  # Features
+y = data['Class']  # Target
+
+# Standardize the feature values
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=42, stratify=y)
+
+# Define classifiers
+classifiers = {
+    "KNN": KNeighborsClassifier(n_neighbors=5),
+    "Decision Tree": DecisionTreeClassifier(random_state=42),
+    "Naive Bayes": GaussianNB()
+}
+
+# Train and evaluate each model
+for name, clf in classifiers.items():
+    print(f"\n=== {name} ===")
+    # Train the model
+    clf.fit(X_train, y_train)
+    
+    # Make predictions
+    y_pred = clf.predict(X_test)
+    
+    # Evaluate the model
+    print("Confusion Matrix:")
+    print(confusion_matrix(y_test, y_pred))
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred))
